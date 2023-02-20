@@ -3,8 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <title>demo App</title>
-    <script src="//file.mo7.cc/static/min/cash.min.js"></script>
-    <script src="//file.mo7.cc/static/min/axios.min.js"></script>
+    <link href="//cdn.bootcdn.net/ajax/libs/normalize/8.0.1/normalize.css" rel="stylesheet" />
+    <script src="//cdn.jsdelivr.net/npm/cash-dom/dist/cash.min.js"></script>
+    <script src="//unpkg.zhimg.com/axios/dist/axios.min.js"></script>
     <script type="module" src="/src/main.ts"></script>
 
     <script>
@@ -14,7 +15,8 @@
         const service = axios.create();
 
         const $axios_set_default = () => {
-          // service.defaults.timeout = 8000; //超时 8 秒
+          service.defaults.baseURL = 'http://msg.mo7.cc'; // 默认请求的 baseUrl
+
           //请求拦截
           service.interceptors.request.use(
             (config) => {
@@ -44,11 +46,16 @@
         const ajax = (param) => {
           const config = {
             headers: {
-              'Auth-Encrypt': mo7Encrypt('/api/public/shell_run'),
+              'Auth-Encrypt': mo7Encrypt(param.url + window.navigator.userAgent),
             },
             ...param,
           };
-          //请求参数转换
+
+          if (param?.data?.CoinServeID) {
+            config.headers['Coin-Serve-ID'] = param.data.CoinServeID;
+          }
+
+          // 请求参数转换
           if (config.method === 'get' || !config.method) {
             config.params = config.data;
             delete config.data;
@@ -71,7 +78,7 @@
   $('.runShellBtn').on('click', () => {
     http
       .ajax({
-        url: 'http://localhost:9999/api/public/shell_run',
+        url: '/api/async/InsertTaskQueue',
         data: {
           Password: 123123,
           ShellID: 1,
