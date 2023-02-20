@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>demo App</title>
+    <script src="//file.mo7.cc/static/min/cash.min.js"></script>
+    <script src="//file.mo7.cc/static/min/axios.min.js"></script>
+    <script type="module" src="/src/main.ts"></script>
+
+    <script>
+      window.http = (function () {
+        const axios = window.axios;
+
+        const service = axios.create();
+
+        const $axios_set_default = () => {
+          // service.defaults.timeout = 8000; //超时 8 秒
+          //请求拦截
+          service.interceptors.request.use(
+            (config) => {
+              // console.info('请求开始');
+              return config;
+            },
+            (error) => {
+              console.error(error);
+              return Promise.reject(error);
+            },
+          );
+
+          //响应拦截
+          service.interceptors.response.use(
+            (response) => {
+              // console.info('请求结束');
+              return response;
+            },
+            (error) => {
+              return Promise.reject(error);
+            },
+          );
+        };
+
+        $axios_set_default();
+
+        const ajax = (param) => {
+          const config = {
+            headers: {
+              'Auth-Encrypt': mo7Encrypt('/api/public/shell_run'),
+            },
+            ...param,
+          };
+          //请求参数转换
+          if (config.method === 'get' || !config.method) {
+            config.params = config.data;
+            delete config.data;
+          }
+          return service(config);
+        };
+
+        return {
+          ajax,
+        };
+      })();
+    </script>
+  </head>
+  <body>
+    <button class="runShellBtn pure-button pure-button-primary">执行</button>
+  </body>
+</html>
+
+<script>
+  $('.runShellBtn').on('click', () => {
+    http
+      .ajax({
+        url: 'http://localhost:9999/api/public/shell_run',
+        data: {
+          Password: 123123,
+          ShellID: 1,
+        },
+        method: 'post',
+      })
+      .then((res) => {
+        const data = res.data;
+        console.log(data);
+      });
+  });
+</script>

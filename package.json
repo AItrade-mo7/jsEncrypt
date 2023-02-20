@@ -1,0 +1,22 @@
+{
+  "name": "encrypt",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "sync": "./_shell/GitSync.sh"
+  },
+  "dependencies": {
+    "crypto-js": "^4.1.1"
+  },
+  "devDependencies": {
+    "@types/crypto-js": "^4.1.1",
+    "@types/javascript-obfuscator": "^0.17.0",
+    "javascript-obfuscator": "^4.0.0",
+    "rollup-obfuscator": "^3.0.1",
+    "typescript": "^4.5.4",
+    "vite": "^2.9.9"
+  }
+}
