@@ -104,9 +104,10 @@
   $(".runText").on("click", () => {
     console.log($("#text").val());
 
-    console.log("开始加密", window.mo7SecretKey);
-    const Code = window.mo7AseEncrypt("我a爱a你")
-    console.log("加密", Code);
+    // window.mo7SecretKey
+    console.log(window.mo7SecretKey);
+    const Code = window.mo7AseEncrypt("我a爱a你1", "abc123")
+    console.log("加密后", Code);
 
   })
 

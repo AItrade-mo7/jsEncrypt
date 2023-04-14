@@ -1,12 +1,15 @@
 import CryptoJS from 'crypto-js';
 
+//文档  https://mojotv.cn/go/crypto-js-with-golang
+
 // 确保key的长度,使用 0 字符来补位
 // length 建议 16 24 32
-function PaddingLeft(key: string, length: number) {
+function PaddingLeft16(key: string) {
+  var length = 16;
   let pkey = key.toString();
   let l = pkey.length;
   if (l < length) {
-    pkey = new Array(length - l + 1).join('0') + pkey;
+    pkey = pkey + new Array(length - l + 1).join('0');
   } else if (l > length) {
     pkey = pkey.slice(length);
   }
@@ -16,7 +19,7 @@ function PaddingLeft(key: string, length: number) {
 //msg 需要被对称加密的明文
 //key aes 对称加密的密钥  必须是16长度,为了和后端交互 key字符串必须是16进制字符串,否在给golang进行string -> []byte带来困难
 function AseEncrypt(msg: string) {
-  var key: any = PaddingLeft(window.mo7SecretKey, 16); //保证key的长度为16byte,进行'0'补位
+  var key: any = PaddingLeft16(window.mo7SecretKey); //保证key的长度为16byte,进行'0'补位
   key = CryptoJS.enc.Utf8.parse(key);
   // 加密结果返回的是CipherParams object类型
   // key 和 iv 使用同一个值
