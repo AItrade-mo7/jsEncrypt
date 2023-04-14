@@ -105,11 +105,11 @@
     console.log($("#text").val());
 
 
-    const Code = window.mo7AESEncrypt("我爱你", "abc123")
+    const Code = window.mo7AESEncrypt("我a爱a你")
     console.log("加密", Code);
 
 
-    const Data = window.mo7AESDeCode(Code, "abc123")
+    const Data = window.mo7AESDeCode(Code)
     console.log("解密", Data);
   })
 

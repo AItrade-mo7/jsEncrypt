@@ -12,9 +12,6 @@ const Md5 = (msg: string): string => {
   return md5(msg).toString();
 };
 
-const SecretKey = Md5('AItrade.net from mo7cc');
-window.mo7SecretKey = SecretKey;
-
 const Encrypt = (msg: string): string => {
   const stamp = new Date().getTime();
   const time = stamp / 1000 / 30;
