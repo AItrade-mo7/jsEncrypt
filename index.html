@@ -1,80 +1,119 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>demo App</title>
-    <link href="//cdn.bootcdn.net/ajax/libs/normalize/8.0.1/normalize.css" rel="stylesheet" />
-    <script src="//cdn.jsdelivr.net/npm/cash-dom/dist/cash.min.js"></script>
-    <script src="//unpkg.zhimg.com/axios/dist/axios.min.js"></script>
-    <script type="module" src="/src/main.ts"></script>
 
-    <script>
-      window.http = (function () {
-        const axios = window.axios;
+<head>
+  <meta charset="UTF-8" />
+  <title>demo App</title>
+  <link href="//cdn.bootcdn.net/ajax/libs/normalize/8.0.1/normalize.css" rel="stylesheet" />
+  <script src="//cdn.jsdelivr.net/npm/cash-dom/dist/cash.min.js"></script>
+  <script src="//unpkg.zhimg.com/axios/dist/axios.min.js"></script>
+  <script type="module" src="/src/main.ts"></script>
 
-        const service = axios.create();
+  <script>
+    window.http = (function () {
+      const axios = window.axios;
 
-        const $axios_set_default = () => {
-          service.defaults.baseURL = 'http://msg.mo7.cc'; // 默认请求的 baseUrl
+      const service = axios.create();
 
-          //请求拦截
-          service.interceptors.request.use(
-            (config) => {
-              // console.info('请求开始');
-              return config;
-            },
-            (error) => {
-              console.error(error);
-              return Promise.reject(error);
-            },
-          );
+      const $axios_set_default = () => {
+        service.defaults.baseURL = 'http://msg.mo7.cc'; // 默认请求的 baseUrl
 
-          //响应拦截
-          service.interceptors.response.use(
-            (response) => {
-              // console.info('请求结束');
-              return response;
-            },
-            (error) => {
-              return Promise.reject(error);
-            },
-          );
+        //请求拦截
+        service.interceptors.request.use(
+          (config) => {
+            // console.info('请求开始');
+            return config;
+          },
+          (error) => {
+            console.error(error);
+            return Promise.reject(error);
+          },
+        );
+
+        //响应拦截
+        service.interceptors.response.use(
+          (response) => {
+            // console.info('请求结束');
+            return response;
+          },
+          (error) => {
+            return Promise.reject(error);
+          },
+        );
+      };
+
+      $axios_set_default();
+
+      const ajax = (param) => {
+        const config = {
+          headers: {},
+          ...param,
         };
 
-        $axios_set_default();
+        // 处理 SatelliteServe
+        if (param?.data?.SatelliteServe) {
+          config.headers['Satellite-Serve'] = param.data.SatelliteServe;
+        }
 
-        const ajax = (param) => {
-          const config = {
-            headers: {
-              'Auth-Encrypt': mo7Encrypt(param.url + window.navigator.userAgent),
-            },
-            ...param,
-          };
+        // 请求参数转换
+        if (config.method === 'get' || !config.method) {
+          config.params = config.data;
+          config.data = '';
+        }
 
-          if (param?.data?.CoinServeID) {
-            config.headers['Coin-Serve-ID'] = param.data.CoinServeID;
-          }
+        // 添加加密验证
+        let datastr = '';
+        if (config.data) {
+          datastr = JSON.stringify(config.data);
+        }
+        const headersAuth = mo7Encrypt(param.url + window.navigator.userAgent + mo7Md5(datastr));
+        config.headers['Auth-Encrypt'] = headersAuth;
 
-          // 请求参数转换
-          if (config.method === 'get' || !config.method) {
-            config.params = config.data;
-            delete config.data;
-          }
-          return service(config);
-        };
+        // 处理请求地址
+        if (config.BaseUrl?.length > 1) {
+          config.url = config.BaseUrl + config.url;
+          delete config.BaseUrl;
+        }
 
-        return {
-          ajax,
-        };
-      })();
-    </script>
-  </head>
-  <body>
-    <button class="runShellBtn pure-button pure-button-primary">执行</button>
-  </body>
+        return service(config);
+      };
+
+      return {
+        ajax,
+      };
+    })();
+  </script>
+</head>
+
+<body>
+  <button class="runShellBtn pure-button pure-button-primary">执行</button>
+
+  <br />
+  <br />
+  <br />
+
+  <input type="text" id="text">
+
+  <button class="runText pure-button pure-button-primary">提取文本</button>
+
+</body>
+
 </html>
 
 <script>
+  $(".runText").on("click", () => {
+    console.log($("#text").val());
+
+
+    const Code = window.mo7AESEncrypt("我爱你", "abc123")
+    console.log("加密", Code);
+
+
+    const Data = window.mo7AESDeCode(Code, "abc123")
+    console.log("解密", Data);
+  })
+
+
   $('.runShellBtn').on('click', () => {
     http
       .ajax({
